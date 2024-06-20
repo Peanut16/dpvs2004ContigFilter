@@ -148,25 +148,6 @@ This sample module contains one small method that filters contigs.
                              'output is not type dict as required.')
         # return the results
         return [output]
-
-    def run_dpvs2004ContigFilter_max(self, ctx, params):
-        """
-        New app which filters contigs in an assembly using both a minimum and a maximum contig length
-        :param params: instance of mapping from String to unspecified object
-        :returns: instance of type "ReportResults" -> structure: parameter
-           "report_name" of String, parameter "report_ref" of String
-        """
-        # ctx is the context object
-        # return variables are: output
-        #BEGIN run_dpvs2004ContigFilter_max
-        #END run_dpvs2004ContigFilter_max
-
-        # At some point might do deeper type checking...
-        if not isinstance(output, dict):
-            raise ValueError('Method run_dpvs2004ContigFilter_max return value ' +
-                             'output is not type dict as required.')
-        # return the results
-        return [output]
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK",

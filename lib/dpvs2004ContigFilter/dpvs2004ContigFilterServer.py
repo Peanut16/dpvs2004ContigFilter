@@ -342,6 +342,10 @@ class Application(object):
                              name='dpvs2004ContigFilter.run_dpvs2004ContigFilter',
                              types=[dict])
         self.method_authentication['dpvs2004ContigFilter.run_dpvs2004ContigFilter'] = 'required'  # noqa
+        self.rpc_service.add(impl_dpvs2004ContigFilter.run_dpvs2004ContigFilter_max,
+                             name='dpvs2004ContigFilter.run_dpvs2004ContigFilter_max',
+                             types=[dict])
+        self.method_authentication['dpvs2004ContigFilter.run_dpvs2004ContigFilter_max'] = 'required'  # noqa
         self.rpc_service.add(impl_dpvs2004ContigFilter.status,
                              name='dpvs2004ContigFilter.status',
                              types=[dict])
