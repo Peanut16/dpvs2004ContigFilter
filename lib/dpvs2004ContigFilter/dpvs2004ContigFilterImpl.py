@@ -30,7 +30,7 @@ This sample module contains one small method that filters contigs.
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "git@github.com:Peanut16/dpvs2004ContigFilter.git"
-    GIT_COMMIT_HASH = "1144ddd72a474900eae8f1c9dc1af828e47321bc"
+    GIT_COMMIT_HASH = "3e9c88d3d674b04b02423b4c9dcb0f7063312bef"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
