@@ -142,3 +142,31 @@ class dpvs2004ContigFilterTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             impl.run_dpvs2004ContigFilter_max(ctx, {'workspace_name': ws, 'assembly_ref': 1,
                  'min_length':1, 'max_length':-1})
+            
+    def test_run_dpvs2004ContigFilter_test_min(self):
+        ref = "79/16/1"
+        params = {
+            'workspace_name': self.wsName,
+            'assembly_ref': ref,
+            'min_length': 200000,
+            'max_length': 6000000
+        }
+        result = self.serviceImpl.run_dpvs2004ContigFilter_max(self.ctx, params)
+        self.assertEqual(result[0]['n_total'], 2)
+        self.assertEqual(result[0]['n_remaining'], 1)
+
+    def test_run_dpvs2004ContigFilter_test_max(self):
+        ref = "79/16/1"
+        params = {
+            'workspace_name': self.wsName,
+            'assembly_ref': ref,
+            'min_length': 100000,
+            'max_length': 4000000
+        }
+        result = self.serviceImpl.run_dpvs2004ContigFilter_max(self.ctx, params)
+        self.assertEqual(result[0]['n_total'], 2)
+        self.assertEqual(result[0]['n_remaining'], 1)
+
+        self.assertTrue(len(result[0]['filtered_assembly_ref']))
+        self.assertTrue(len(result[0]['report_name']))
+        self.assertTrue(len(result[0]['report_ref']))

@@ -30,7 +30,7 @@ This sample module contains one small method that filters contigs.
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "git@github.com:Peanut16/dpvs2004ContigFilter.git"
-    GIT_COMMIT_HASH = "56d3cf2036bd99255330c8b835a34063b349a0d5"
+    GIT_COMMIT_HASH = "80e7ff27decdc492b2d16a1abdce1176ab4431da"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
@@ -170,6 +170,71 @@ This sample module contains one small method that filters contigs.
             raise ValueError('Max length must be greater than min')
         print(params['min_length'], params['max_length'], params['assembly_ref'])
         output = {}
+        assembly_util = AssemblyUtil(self.callback_url)
+        fasta_file = assembly_util.get_assembly_as_fasta({'ref': params['assembly_ref']})
+        print(fasta_file)
+        parsed_assembly = SeqIO.parse(fasta_file['path'], 'fasta')
+        min_length = params['min_length']
+        max_length = params['max_length']
+
+        # Keep a list of contigs greater than min_length
+        good_contigs = []
+        # total contigs regardless of length
+        n_total = 0
+        # total contigs over the min_length
+        n_remaining = 0
+        for record in parsed_assembly:
+            n_total += 1
+            if len(record.seq) >= min_length and len(record.seq) <= max_length:
+                good_contigs.append(record)
+                n_remaining += 1
+        output = {
+            'n_total': n_total,
+            'n_remaining': n_remaining
+        }
+        # Create a file to hold the filtered data
+        workspace_name = params['workspace_name']
+        filtered_path = os.path.join(self.shared_folder, 'filtered.fasta')
+        SeqIO.write(good_contigs, filtered_path, 'fasta')
+        # Upload the filtered data to the workspace
+        new_ref = assembly_util.save_assembly_from_fasta({
+            'file': {'path': filtered_path},
+            'workspace_name': workspace_name,
+            'assembly_name': fasta_file['assembly_name']
+        })
+        output = {
+            'n_total': n_total,
+            'n_remaining': n_remaining,
+            'filtered_assembly_ref': new_ref
+        }
+        # Create an output summary message for the report
+        text_message = "".join([
+            'Filtered assembly to ',
+            str(n_remaining),
+            ' contigs out of ',
+            str(n_total)
+        ])
+        # Data for creating the report, referencing the assembly we uploaded
+        report_data = {
+            'objects_created': [
+                {'ref': new_ref, 'description': 'Filtered contigs'}
+            ],
+            'text_message': text_message
+        }
+        # Initialize the report
+        kbase_report = KBaseReport(self.callback_url)
+        report = kbase_report.create({
+            'report': report_data,
+            'workspace_name': workspace_name
+        })
+        # Return the report reference and name in our results
+        output = {
+            'report_ref': report['ref'],
+            'report_name': report['name'],
+            'n_total': n_total,
+            'n_remaining': n_remaining,
+            'filtered_assembly_ref': new_ref
+        }
         #END run_dpvs2004ContigFilter_max
 
         # At some point might do deeper type checking...
