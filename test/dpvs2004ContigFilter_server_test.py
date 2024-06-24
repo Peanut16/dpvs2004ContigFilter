@@ -114,3 +114,31 @@ class dpvs2004ContigFilterTest(unittest.TestCase):
         print(result)
         #TODO -- assert some things (later)
 
+    def test_invalid_params(self):
+        impl = self.serviceImpl
+        ctx = self.ctx
+        ws = self.wsName
+        # Missing assembly ref
+        with self.assertRaises(ValueError):
+            impl.run_dpvs2004ContigFilter_max(ctx, {'workspace_name': ws,
+                'min_length': 100, 'max_length': 1000000})
+        # Missing min length
+        with self.assertRaises(ValueError):
+            impl.run_dpvs2004ContigFilter_max(ctx, {'workspace_name': ws, 'assembly_ref': 'x',
+                'max_length': 1000000})
+        # Min length is negative
+        with self.assertRaises(ValueError):
+            impl.run_dpvs2004ContigFilter_max(ctx, {'workspace_name': ws, 'assembly_ref': 'x',
+                'min_length': -1, 'max_length': 1000000})
+        # Min length is wrong type
+        with self.assertRaises(ValueError):
+            impl.run_dpvs2004ContigFilter_max(ctx, {'workspace_name': ws, 'assembly_ref': 'x',
+                'min_length': 'x', 'max_length': 1000000})
+        # Assembly ref is wrong type
+        with self.assertRaises(ValueError):
+            impl.run_dpvs2004ContigFilter_max(ctx, {'workspace_name': ws, 'assembly_ref': 1,
+                'min_length': 1, 'max_length': 1000000})
+        # Max length is negative
+        with self.assertRaises(ValueError):
+            impl.run_dpvs2004ContigFilter_max(ctx, {'workspace_name': ws, 'assembly_ref': 1,
+                 'min_length':1, 'max_length':-1})
