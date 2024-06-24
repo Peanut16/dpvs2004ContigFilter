@@ -11,7 +11,7 @@
     },
     "parameters": [ 
         {
-            "id": "assembly_input_ref",
+            "id": "assembly_ref",
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
@@ -32,13 +32,25 @@
                 "validate_as": "int",
                 "min_integer" : 0
             }
+        },
+        {
+            "id": "max_length",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "99999999" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_integer" : 0
+            }
         }
     ],
     "behavior": {
         "service-mapping": {
             "url": "",
             "name":"dpvs2004ContigFilter",
-            "method": "run_dpvs2004ContigFilter",
+            "method": "run_dpvs2004ContigFilter_max",
             "input_mapping": [
                 {
                     "narrative_system_variable": "workspace",
@@ -47,13 +59,20 @@
                     "narrative_system_variable": "workspace_id",
                     "target_property": "workspace_id"
                 },{
-                    "input_parameter": "assembly_input_ref",
-                    "target_property": "assembly_input_ref",
+                    "input_parameter": "assembly_ref",
+                    "target_property": "assembly_ref",
                     "target_type_transform": "resolved-ref"
-                },{
+                },
+                {
                     "input_parameter": "min_length",
                     "target_property": "min_length"
+                },
+                {
+                    "input_parameter": "max_length",
+                    "target_property": "max_length"
                 }
+                
+                
             ],
             "output_mapping": [
                 {

@@ -112,6 +112,39 @@ This sample module contains one small method that filters contigs.
         filtered_fasta_file = os.path.join(self.shared_folder, 'filtered.fasta')
         SeqIO.write(good_contigs, filtered_fasta_file, 'fasta')
 
+        output = {
+            'n_total': n_total,
+            'n_remaining': n_remaining,
+            'filtered_assembly_ref': new_ref
+        }
+
+        # Keep a list of contigs greater than min_length
+        good_contigs = []
+        # total contigs regardless of length
+        n_total = 0
+        # total contigs over the min_length
+        n_remaining = 0
+        for record in parsed_assembly:
+            n_total += 1
+            if len(record.seq) >= min_length and len(record.seq) <= max_length:
+                good_contigs.append(record)
+                n_remaining += 1
+
+                 # Create a file to hold the filtered data
+        workspace_name = params['workspace_name']
+        filtered_path = os.path.join(self.shared_folder, 'filtered.fasta')
+        SeqIO.write(good_contigs, filtered_path, 'fasta')
+        # Upload the filtered data to the workspace
+        new_ref = assembly_util.save_assembly_from_fasta({
+            'file': {'path': filtered_path},
+            'workspace_name': workspace_name,
+            'assembly_name': fasta_file['assembly_name']
+        })
+
+        parsed_assembly = SeqIO.parse(fasta_file['path'], 'fasta')
+        min_length = params['min_length']
+        max_length = params['max_length']
+
 
         # Step 4 - Save the new Assembly back to the system
         logging.info('Uploading filtered Assembly data.')
@@ -159,14 +192,67 @@ This sample module contains one small method that filters contigs.
         # ctx is the context object
         # return variables are: output
         #BEGIN run_dpvs2004ContigFilter_max
+        n_total = 0
+
+        for name in ['min_length', 'max_length', 'assembly_ref', 'workspace_name']:
+            if name not in params:
+                raise ValueError('Parameter "' + name + '" is required but missing')
+        if not isinstance(params['min_length'], int) or (params['min_length'] < 0):
+            raise ValueError('Min length must be a non-negative integer')
+        if not isinstance(params['max_length'], int) or (params['max_length'] < 0):
+            raise ValueError('Max length must be a non-negative integer')
+        if not isinstance(params['assembly_ref'], str) or not len(params['assembly_ref']):
+            raise ValueError('Pass in a valid assembly reference string')
+        if not isinstance(params['max_length'], int) < (params['min_length']):
+            raise ValueError('Max length must be greater than min length')
+        
+        assembly_util = AssemblyUtil(self.callback_url)
+        fasta_file = assembly_util.get_assembly_as_fasta({'ref': params['assembly_ref']})
+        print(fasta_file)
+        
+        output = {
+            'n_total': n_total,
+            'n_remaining': n_remaining
+        }
+
+        text_message = "".join([
+            'Filtered assembly to ',
+            str(n_remaining),
+            ' contigs out of ',
+            str(n_total)
+        ])
+        # Data for creating the report, referencing the assembly we uploaded
+        report_data = {
+            'objects_created': [
+                {'ref': new_ref, 'description': 'Filtered contigs'}
+            ],
+            'text_message': text_message
+        }
+        # Initialize the report
+        kbase_report = KBaseReport(self.callback_url)
+        report = kbase_report.create({
+            'report': report_data,
+            'workspace_name': workspace_name
+        })
+        # Return the report reference and name in our results
+        output = {
+            'report_ref': report['ref'],
+            'report_name': report['name'],
+            'n_total': n_total,
+            'n_remaining': n_remaining,
+            'filtered_assembly_ref': new_ref
+        }
+
+        if not isinstance(output, dict):
+            raise ValueError('Method run_dpvs2004ContigFilter_max return value ' +
+                                'output is not type dict as required.')
+            # return the results
+        return [output]
+
         #END run_dpvs2004ContigFilter_max
 
         # At some point might do deeper type checking...
-        if not isinstance(output, dict):
-            raise ValueError('Method run_dpvs2004ContigFilter_max return value ' +
-                             'output is not type dict as required.')
-        # return the results
-        return [output]
+
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK",

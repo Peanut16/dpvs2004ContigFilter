@@ -27,7 +27,7 @@ suggestions:
 # Configure the display and description of parameters
 #
 parameters :
-    assembly_input_ref :
+    assembly_ref :
         ui-name : |
             Assembly
         short-hint : |
@@ -37,5 +37,10 @@ parameters :
             Min Length Threshold
         short-hint : |
             All contigs below this length will be removed
+    max_length:
+        ui-name: |
+            Maximum contig length
+        short-hint: |
+            Maximum required length of every contig in the assembly
 description : |
     <p>This is a simple method designed to illustrate the KBase SDK.</p>
