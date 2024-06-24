@@ -30,7 +30,7 @@ This sample module contains one small method that filters contigs.
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "git@github.com:Peanut16/dpvs2004ContigFilter.git"
-    GIT_COMMIT_HASH = "3e9c88d3d674b04b02423b4c9dcb0f7063312bef"
+    GIT_COMMIT_HASH = "56d3cf2036bd99255330c8b835a34063b349a0d5"
 
     #BEGIN_CLASS_HEADER
     # Class variables and functions can be defined in this block
@@ -159,6 +159,8 @@ This sample module contains one small method that filters contigs.
         # ctx is the context object
         # return variables are: output
         #BEGIN run_dpvs2004ContigFilter_max
+        print(params['min_length'], params['max_length'], params['assembly_ref'])
+        output = {}
         #END run_dpvs2004ContigFilter_max
 
         # At some point might do deeper type checking...
